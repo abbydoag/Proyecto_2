@@ -6,26 +6,30 @@ import csv
 class app(Tk):
     def __init__(self):
         Tk.__init__(self)
-        self.title("Exportar e importar")
-        self.geometry("250x100")
-        self.configure(bg="blueviolet")
-        #Button(text="ver",command=self.showUsers).place(x=0,y=5)
-        # bgcolor="#e4c1f9"
-        self.btn1 = Button(text="Exportar a csv",command=self.createUser, width=20);self.btn1.place(x=50,y=10); self.btn1.config(bg="#e4c1f9")
-        self.btn2 = Button(text="Importar csv a neo4j",command=self.poner, width=20);self.btn2.place(x=50,y=40);self.btn2.config(bg="#e0aaff")
-        self.BD = Neo4JExample("neo4j+s://9d0eb28d.databases.neo4j.io", "neo4j", "")
+        self.title("Data Graphic")
+        self.geometry("250x250")
+        
+    
+        self.btn1 = Button(text="Exportar grafo",command=self.createUser, width=20)
+        self.btn1.place(x=50,y=10)
+        self.btn2 = Button(text="Importar data a NEO4J",command=self.IMPORTAR, width=20)
+        self.btn2.place(x=50,y=40)
+        self.BD = Neo4JConexion("neo4j+s://9d0eb28d.databases.neo4j.io", "neo4j", "")
 
-    def poner(self):
-        self.BD.ponerEnNeo()
+    # FUNCIONES PRINCIPALES EN EL TKINTER
+    def IMPORTAR(self):
+        self.BD.exportoneo4j()
+
+    # Validación Sesión con el USER
     def showUsers(self):
        self.BD.print_Users()
 
     def createUser(self):
-        self.BD.crearCSV()
+        self.BD.importarcsv()
 
 
 
-class Neo4JExample:
+class Neo4JConexion:
 
     def __init__(self, uri, user, password):
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
@@ -44,12 +48,12 @@ class Neo4JExample:
             print(greeting)
         
 
-    def ponerEnNeo(self):
+    def exportoneo4j(self): # módulo r (read)
         with open("", mode="r") as file:
             node_reader = csv.DictReader(file)
             nodes = list(node_reader)
 
-# Read relationships from CSV
+
         with open("", mode="r") as file:
             relationship_reader = csv.DictReader(file)
             relationships = list(relationship_reader)
@@ -58,6 +62,7 @@ class Neo4JExample:
                 query = "match (n) detach delete n"
                 session.run(query)
 
+        # Traducción - conversión para lectura de csv
         with self.driver.session() as session:
             for node in nodes:
                 labels = node["labels"]
@@ -82,7 +87,6 @@ class Neo4JExample:
 
                 query = "CREATE (n:{}) SET n = {}".format(labels, newProperties)
                 print(query)
-                #print(query)
                 session.run(query)
 
         with self.driver.session() as session:
@@ -99,7 +103,7 @@ class Neo4JExample:
         
         print("Termino de ingresar datos")
 
-    def crearCSV(self):
+    def importarcsv(self):
         with self.driver.session() as session:
     # Export nodes
             nodes = session.run("MATCH (n) RETURN n").value()
@@ -111,7 +115,7 @@ class Neo4JExample:
 
             # Export relationships
             relationships = session.run("MATCH ()-[r]->() RETURN r").value()
-            with open("relationships.csv", mode="w", newline="") as file:
+            with open("name", mode="w", newline="") as file:
                 writer = csv.writer(file)
                 writer.writerow(["relationship_id", "start_node_id", "end_node_id", "type", "properties"])
                 for relationship in relationships:
@@ -119,10 +123,9 @@ class Neo4JExample:
 
 
 
-'''if __name__ == "__main__":
-    greeter = HelloWorldExample("bolt://localhost:7687", "neo4j", "12345678")
-    greeter.print_greeting("hello, world")
-    greeter.close()'''
-
 bucle = app()
 bucle.mainloop()
+
+
+
+
