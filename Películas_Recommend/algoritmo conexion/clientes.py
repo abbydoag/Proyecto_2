@@ -65,9 +65,81 @@ def run_page_rank(G):
     df['rank'] = df[1].rank(method='dense', ascending=False)
     print(f"done calculating page rank")
     return df
-
-def orquestador(password):
+def orquestador_viejos(password):
      driver=iniciador()
      G= create_networkx_graph(password =password)
      df=run_page_rank(G)
      df.head(10)
+
+########################################################################################
+
+
+
+
+def usuarios_nodo(tx, id, p):
+    tx.run("CREATE (:User {id: $id, p: $p})", id=id, p = p)
+    
+def existencia_usuarios_nodo(tx, id):
+    result=tx.run("MATCH (u:User {id : $id}) return count(u)", id=id)
+    return list(result)
+
+def new_cliente(id, p):
+    records = []
+    with driver.session() as session:
+        n=session.read_transaction( existencia_usuarios_nodo,id = id)
+        print(n)
+        if (n == 0 or n == None):
+            session.write_transaction(usuarios_nodo,id = id, p = p)
+        else: 
+            print("No mms ya existe ese usuario")
+    return None
+
+
+def genero(tx, nombre):
+    
+    values=tx.run(query,nombre =str(nombre))
+    return list(values)
+def peliculas_generos(generos):
+    records = []
+    for nombre in generos:
+        print(nombre)
+        with driver.session() as session:
+            result = session.read_transaction(genero ,nombre = nombre)
+            for record in result:
+                records.append(record)
+        print("Found  {record} records ".format(record=len(records)))
+   
+
+    return records
+def create_networkx_graph_nuevos(generos):
+    
+    val_count  = Counter([(res['m.nombre'],res['m2.nombre']) for res in peliculas_generos(generos) ])
+    if len(val_count)==0:
+        print(f" no records for {password}")
+    print(f"  no of  records for {password} {len(val_count)}")
+
+    recs = pd.DataFrame([[a[0], a[1], val_count[a]] for a in val_count])
+
+    G = nx.DiGraph()
+    #recs= recs.head(20)
+    total = len(val_count)
+    for idx , rec in recs.iterrows():
+        #print(f"{idx} of {total} loaded")
+        G.add_edge(rec[0], rec[1], weight = rec[2])
+    return G
+
+def run_page_rank(G, generos):
+    pr=pagerank(G)
+    sorted_pr = {k: v for k, v in sorted(pagerank(G).items(), key=lambda item: item[1], reverse = True)}
+    df= pd.DataFrame(sorted_pr.items())
+    df['rank'] = df[1].rank(method='dense', ascending=False)
+    print(f"done calculating page rank")
+    return df
+
+def orquestador_nuevos(id,password,generos):
+     driver=iniciador()
+     new_cliente(id, password)
+     G=create_networkx_graph_nuevos(generos)
+     df=run_page_rank(G,generos)
+     df.head()
+     
