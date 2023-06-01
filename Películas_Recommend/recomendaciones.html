@@ -195,6 +195,55 @@
                     <!-- Content Row -->
                     <div class="row">
 
+
+                    <center><h4>Recomendación de películas por usuario</h4></center>
+
+                    <div></div>
+
+                    <hr>
+
+
+                    
+                    <script>
+                        function pelirecomendacion() {
+                        var opciones = document.getElementsByName('likes');
+                      
+                        for (var i = 0; i < opciones.length; i++) {
+                            if (opciones[i].checked) {
+                            var valorSeleccionado = opciones[i].value;
+                           
+                            break;
+                            }
+                        }
+                        }
+                    </script>
+
+
+                  <!-- <h4></h4>
+                    <table summary="Los grupos de música punk más famosos del Reino Unido", href="pelirecomendacion">
+                        <caption>Un resumen de los grupos de música punk más famosos del Reino Unido</caption>
+                        <thead>
+                          <tr>
+                            <th scope="col">{id}</th>
+                            <th scope="col">{name}</th>
+                            <th scope="col">{likes}</th>
+
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">{movie1}</th>
+                          </tr>
+                          <tr>
+                            <th scope="row">{movie2}
+                            </th>
+                          </tr>
+                      
+                      
+                        </tfoot>
+                      </table> 
+                      -->
+
                         
 
                     

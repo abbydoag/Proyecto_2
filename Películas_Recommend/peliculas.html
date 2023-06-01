@@ -22,6 +22,24 @@
 
 </head>
 
+<form action="main.py">
+
+    <script>
+        function recomendar() {
+          var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+          var valores = [];
+      
+          checkboxes.forEach(function(checkbox) {
+          valores.push(checkbox.value);
+          });
+      
+    }
+  
+  </script>
+
+
+</form>
+
 <body id="page-top">
 
     <!-- Page Wrapper -->
@@ -194,6 +212,18 @@
 
                     <!-- Content Row -->
                     <div class="row">
+
+                        <form action="peliculas.html" method="post" target="_blank">
+
+                            <p>
+                          
+                              Búsqueda de peliculas: <input type="search" name="busquedamusica" placeholder="{{ movies }}">
+                          
+                              <input type="submit" value="Buscar">
+                          
+                            </p>
+                          
+                          </form>
 
                         
 
